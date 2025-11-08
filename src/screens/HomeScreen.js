@@ -39,7 +39,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Header title="AARSUN WOODS" navigation={navigation} />
+      <Header title="AARSUN WOODS PVT. LTD." navigation={navigation} />
       <ScrollView style={styles.content}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Featured Products</Text>
