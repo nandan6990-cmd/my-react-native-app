@@ -29,27 +29,41 @@ const ProductsScreen = ({ navigation, route }) => {
   }, []);
 
   const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const fetchedProducts = await wooCommerceAPI.getProducts();
-      setProducts(fetchedProducts);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      const errorMessage = error.message || 'Unknown error occurred';
-      Alert.alert(
-        'Error Loading Products', 
-        `Failed to load products: ${errorMessage}\n\nPlease check:\n- Your WooCommerce API credentials\n- Network connection\n- Store URL is accessible`
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+
+    // Pagination logic
+    let allProducts = [];
+    let page = 1;
+    let perPage = 100;
+    let fetched = [];
+
+    do {
+      fetched = await wooCommerceAPI.getProducts({ per_page: perPage, page });
+      allProducts = allProducts.concat(fetched);
+      page++;
+    } while (fetched.length === perPage);
+
+    // Set all products
+    setProducts(allProducts);
+
+  } catch (error) {
+    const errorMessage = error.message || 'Unknown error occurred';
+    Alert.alert(
+      'Error Loading Products',
+      `Failed to load products: ${errorMessage}\n\nPlease check:\n- Your WooCommerce API credentials\n- Network connection\n- Store URL is accessible`
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const filteredProducts =
     selectedCategory === 'All'
       ? products
-      : products.filter((product) => product.category === selectedCategory);
-
+      : products.filter((product) => product.category == selectedCategory);
+         //console.log(products);
   return (
     <View style={styles.container}>
       <Header title="Products" navigation={navigation} />
@@ -82,7 +96,7 @@ const ProductsScreen = ({ navigation, route }) => {
           </View>
         ) : filteredProducts.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No products found</Text>
+            <Text style={styles.emptyText}>ohh No products found</Text>
           </View>
         ) : (
           <View style={styles.productGrid}>
